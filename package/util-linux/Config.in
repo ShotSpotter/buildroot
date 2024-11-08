@@ -385,6 +385,12 @@ config BR2_PACKAGE_UTIL_LINUX_SETTERM
 	help
 	  Set terminal attributes
 
+config BR2_PACKAGE_UTIL_LINUX_SFDISK
+       bool "sfdisk"
+       depends on BR2_PACKAGE_UTIL_LINUX_LIBFDISK
+       help
+         Partition table manipulator for Linux
+
 config BR2_PACKAGE_UTIL_LINUX_SU
 	bool "su"
 	depends on (BR2_ENABLE_LOCALE && BR2_USE_WCHAR) # linux-pam
