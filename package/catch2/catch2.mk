@@ -16,6 +16,7 @@ CATCH2_SUPPORTS_IN_SOURCE_BUILD = NO
 # library is not really supported officially:
 # https://github.com/catchorg/Catch2/blob/devel/docs/faq.md#can-i-compile-catch2-into-a-dynamic-library
 CATCH2_CONF_OPTS = \
+	-DCMAKE_BUILD_TYPE=Release \
 	-DCATCH_INSTALL_DOCS=OFF \
 	-DBUILD_SHARED_LIBS=OFF
 
