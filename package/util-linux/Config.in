@@ -129,6 +129,12 @@ config BR2_PACKAGE_UTIL_LINUX_FDFORMAT
 	help
 	  Low-level format a floppy disk
 
+config BR2_PACKAGE_UTIL_LINUX_FDISKS
+	bool "fdisks"
+	depends on BR2_PACKAGE_UTIL_LINUX_LIBFDISK
+	help
+	  Partition table manipulators for Linux
+
 config BR2_PACKAGE_UTIL_LINUX_FSCK
 	bool "fsck"
 	depends on BR2_USE_MMU # fork()
@@ -384,12 +390,6 @@ config BR2_PACKAGE_UTIL_LINUX_SETTERM
 	select BR2_PACKAGE_NCURSES
 	help
 	  Set terminal attributes
-
-config BR2_PACKAGE_UTIL_LINUX_SFDISK
-       bool "sfdisk"
-       depends on BR2_PACKAGE_UTIL_LINUX_LIBFDISK
-       help
-         Partition table manipulator for Linux
 
 config BR2_PACKAGE_UTIL_LINUX_SU
 	bool "su"
