@@ -24,7 +24,6 @@ config BR2_PACKAGE_TENSORFLOW_LITE
 	select BR2_PACKAGE_LIBABSEIL_CPP
 	select BR2_PACKAGE_NEON_2_SSE
 	select BR2_PACKAGE_PTHREADPOOL
-	select BR2_PACKAGE_PROTOBUF
 	select BR2_PACKAGE_RUY if BR2_PACKAGE_RUY_ARCH_SUPPORTS
 	select BR2_PACKAGE_XNNPACK if BR2_PACKAGE_XNNPACK_ARCH_SUPPORTS
 	help
@@ -32,6 +31,22 @@ config BR2_PACKAGE_TENSORFLOW_LITE
 	  to run previously trained machine learning models.
 
 	  https://www.tensorflow.org/
+
+if BR2_PACKAGE_TENSORFLOW_LITE
+config BR2_PACKAGE_TENSORFLOW_LITE_EXAMPLES
+	bool "Build examples"
+	select BR2_PACKAGE_PROTOBUF
+	help
+	  Build mobilenet image tagging example
+
+config BR2_PACKAGE_TENSORFLOW_LITE_BENCHMARK_TOOL
+	bool "Build TFLite Model Benchmark Tool"
+	select BR2_PACKAGE_PROTOBUF
+	default y
+	help
+	  A simple C++ binary to benchmark a TFLite model and its individual operators
+
+endif #BR2_PACKAGE_TENSORFLOW_LITE
 
 comment "tensorflow-lite needs a toolchain w/ gcc >= 8, C++, threads"
 	depends on !BR2_TOOLCHAIN_USES_GLIBC || !BR2_INSTALL_LIBSTDCPP || \
