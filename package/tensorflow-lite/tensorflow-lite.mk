@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TENSORFLOW_LITE_VERSION = 2.11.0
+TENSORFLOW_LITE_VERSION = 2.18.0
 TENSORFLOW_LITE_SITE =  $(call github,tensorflow,tensorflow,v$(TENSORFLOW_LITE_VERSION))
 TENSORFLOW_LITE_INSTALL_STAGING = YES
 TENSORFLOW_LITE_LICENSE = Apache-2.0
@@ -19,11 +19,17 @@ TENSORFLOW_LITE_DEPENDENCIES += \
 	farmhash \
 	fft2d \
 	flatbuffers \
+	flatcc \
 	gemmlowp \
 	libabseil-cpp \
-	neon-2-sse
+	neon-2-sse \
+	pthreadpool \
+	protobuf
 
 TENSORFLOW_LITE_CONF_OPTS = \
+	-DTFLITE_HOST_TOOLS_DIR=$(HOST_DIR) \
+	-DProtobuf_PROTOC_EXECUTABLE=$(HOST_DIR)/bin/protoc \
+	-DTFLITE_BENCHMARK_MODEL=ON \
 	-Dabsl_DIR=$(STAGING_DIR)/usr/lib/cmake/absl \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/gemmlowp" \
@@ -41,6 +47,15 @@ TENSORFLOW_LITE_CONF_OPTS = \
 	-DTFLITE_ENABLE_INSTALL=ON \
 	-DTFLITE_ENABLE_MMAP=ON \
 	-DTFLITE_ENABLE_NNAPI=OFF
+
+# Regenerate schema with FlatBuffers flatcc to work around google hyper-specific version checking
+TENSORFLOW_LITE_RECOMPILE_SCHEMAS = \
+$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
+$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/conversion_metadata.fbs && \
+$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
+$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/schema.fbs
+
+TENSORFLOW_LITE_POST_PATCH_HOOKS += TENSORFLOW_LITE_RECOMPILE_SCHEMAS
 
 ifeq ($(BR2_PACKAGE_RUY),y)
 TENSORFLOW_LITE_DEPENDENCIES += ruy
