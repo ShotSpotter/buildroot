@@ -1,0 +1,29 @@
+From 34fb10dade8ac1af793afa1dee0f5aa97cabecc4 Mon Sep 17 00:00:00 2001
+From: "Robert B. Calhoun" <rcalhoun@shotspotter.com>
+Date: Wed, 18 Jun 2025 16:26:23 +0000
+Subject: [PATCH 5/5] Relax the constraint on flatbuffers version
+
+---
+ .../acceleration/configuration/configuration_generated.h     | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tensorflow/lite/acceleration/configuration/configuration_generated.h b/tensorflow/lite/acceleration/configuration/configuration_generated.h
+index 2820f7c43b5..41868127506 100644
+--- a/tensorflow/lite/acceleration/configuration/configuration_generated.h
++++ b/tensorflow/lite/acceleration/configuration/configuration_generated.h
+@@ -22,9 +22,10 @@ limitations under the License.
+ 
+ // Ensure the included flatbuffers.h is the same version as when this file was
+ // generated, otherwise it may not be compatible.
++// (Source .fbs file not availabile; relax the constraint)
+ static_assert(FLATBUFFERS_VERSION_MAJOR == 24 &&
+-              FLATBUFFERS_VERSION_MINOR == 3 &&
+-              FLATBUFFERS_VERSION_REVISION == 25,
++              FLATBUFFERS_VERSION_MINOR > 3 ||
++              FLATBUFFERS_VERSION_MAJOR == 25,
+              "Non-compatible flatbuffers version included");
+ 
+ namespace tflite {
+-- 
+2.43.0
+
