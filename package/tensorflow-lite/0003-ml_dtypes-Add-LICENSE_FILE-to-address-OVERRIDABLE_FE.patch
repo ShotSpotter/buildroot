@@ -1,0 +1,25 @@
+From 405bae69cad89cc71f3a39e9ea69c868485400a9 Mon Sep 17 00:00:00 2001
+From: "Robert B. Calhoun" <rcalhoun@shotspotter.com>
+Date: Wed, 18 Jun 2025 14:27:05 +0000
+Subject: [PATCH 3/3] ml_dtypes: Add LICENSE_FILE to address
+ OVERRIDABLE_FETCH_CONTENT_LICENSE_CHECK
+
+---
+ tensorflow/lite/tools/cmake/modules/ml_dtypes.cmake | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tensorflow/lite/tools/cmake/modules/ml_dtypes.cmake b/tensorflow/lite/tools/cmake/modules/ml_dtypes.cmake
+index 67cd3347dc8..54d61a10fe9 100644
+--- a/tensorflow/lite/tools/cmake/modules/ml_dtypes.cmake
++++ b/tensorflow/lite/tools/cmake/modules/ml_dtypes.cmake
+@@ -31,6 +31,7 @@ OverridableFetchContent_Declare(
+   # GIT_SHALLOW TRUE
+   GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/ml_dtypes"
++  LICENSE_FILE "LICENSE"
+ )
+ OverridableFetchContent_GetProperties(ml_dtypes)
+ if(NOT ml_dtypes_POPULATED)
+-- 
+2.43.0
+
