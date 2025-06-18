@@ -23,13 +23,12 @@ TENSORFLOW_LITE_DEPENDENCIES += \
 	gemmlowp \
 	libabseil-cpp \
 	neon-2-sse \
-	pthreadpool \
-	protobuf
+	pthreadpool
+
 
 TENSORFLOW_LITE_CONF_OPTS = \
 	-DTFLITE_HOST_TOOLS_DIR=$(HOST_DIR) \
 	-DProtobuf_PROTOC_EXECUTABLE=$(HOST_DIR)/bin/protoc \
-	-DTFLITE_BENCHMARK_MODEL=ON \
 	-Dabsl_DIR=$(STAGING_DIR)/usr/lib/cmake/absl \
 	-DBUILD_SHARED_LIBS=ON \
 	-DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/usr/include/gemmlowp" \
@@ -48,15 +47,6 @@ TENSORFLOW_LITE_CONF_OPTS = \
 	-DTFLITE_ENABLE_MMAP=ON \
 	-DTFLITE_ENABLE_NNAPI=OFF
 
-# Regenerate schema with FlatBuffers flatcc to work around google hyper-specific version checking
-TENSORFLOW_LITE_RECOMPILE_SCHEMAS = \
-$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
-$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/conversion_metadata.fbs && \
-$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
-$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/schema.fbs
-
-TENSORFLOW_LITE_POST_PATCH_HOOKS += TENSORFLOW_LITE_RECOMPILE_SCHEMAS
-
 ifeq ($(BR2_PACKAGE_RUY),y)
 TENSORFLOW_LITE_DEPENDENCIES += ruy
 TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_ENABLE_RUY=ON
@@ -70,5 +60,37 @@ TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_ENABLE_XNNPACK=ON -Dxnnpack_POPULATED=ON
 else
 TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_ENABLE_XNNPACK=OFF
 endif
+
+ifeq ($(BR2_PACKAGE_TENSORFLOW_LITE_EXAMPLES),y)
+# currently there is only one example, label_image (mobilenet)
+# This example is broken in v2.15.0, v2.17.0, see
+# https://github.com/tensorflow/tensorflow/issues/62214
+# Example is not shipped; it is located in
+# $(TENSORFLOW_LITE_SRCDIR)/buildroot-build/examples/label_image
+TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_ENABLE_LABEL_IMAGE=ON
+TENSORFLOW_LITE_DEPENDENCIES += protobuf
+else
+TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_ENABLE_LABEL_IMAGE=OFF
+endif
+
+# CMake requires that dependencies for this tool be satisfied,
+# but it is not built as part of make all. Unresolved.
+ifeq ($(BR2_PACKAGE_TENSORFLOW_LITE_BENCHMARK_TOOL),y)
+TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_BENCHMARK_MODEL=ON
+TENSORFLOW_LITE_DEPENDENCIES += protobuf
+else
+TENSORFLOW_LITE_CONF_OPTS += -DTFLITE_BENCHMARK_MODEL=OFF
+endif
+
+
+# Regenerate schemas with FlatBuffers flatcc to work around Google's hyper-specific version checking.
+# Can't fix tensorflow/lite/acceleration/configuration/configuration_generated.h this way, no .fbs file.
+TENSORFLOW_LITE_RECOMPILE_SCHEMAS = \
+$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
+$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/conversion_metadata.fbs && \
+$(HOST_DIR)/bin/flatc --cpp --gen-object-api -o $(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema \
+$(TENSORFLOW_LITE_SRCDIR)/../compiler/mlir/lite/schema/schema.fbs
+
+TENSORFLOW_LITE_POST_PATCH_HOOKS += TENSORFLOW_LITE_RECOMPILE_SCHEMAS
 
 $(eval $(cmake-package))
