@@ -9,8 +9,8 @@ GEMMLOWP_SITE = $(call github,google,gemmlowp,$(GEMMLOWP_VERSION))
 GEMMLOWP_LICENSE = Apache-2.0
 GEMMLOWP_LICENSE_FILES = LICENSE
 GEMMLOWP_INSTALL_STAGING = YES
-# Only installs a header
-GEMMLOWP_INSTALL_TARGET = NO
+# libeight_bit_int_gemm.so is required by some models
+GEMMLOWP_INSTALL_TARGET = YES
 GEMMLOWP_SUBDIR = contrib
 
 $(eval $(cmake-package))
