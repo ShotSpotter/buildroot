@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RUY_VERSION = 83fd40d730feb0804fafbc2d8814bcc19a17b2e5
+RUY_VERSION = 3286a34cc8de6149ac6844107dfdffac91531e72
 RUY_SITE = $(call github,google,ruy,$(RUY_VERSION))
 RUY_LICENSE = Apache-2.0
 RUY_LICENSE_FILES = LICENSE
