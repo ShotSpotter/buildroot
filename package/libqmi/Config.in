@@ -22,5 +22,5 @@ config BR2_PACKAGE_LIBQMI_NONROOT_USER
        help
          Optional non-root user allowed to access QMI devices
 	 via qmi-proxy (root user is always permited)
-       
+
 endif
