@@ -13,3 +13,14 @@ config BR2_PACKAGE_LIBQMI
 comment "libqmi needs a toolchain w/ wchar, threads"
 	depends on BR2_USE_MMU
 	depends on !BR2_USE_WCHAR || !BR2_TOOLCHAIN_HAS_THREADS
+
+
+if BR2_PACKAGE_LIBQMI
+
+config BR2_PACKAGE_LIBQMI_NONROOT_USER
+       string "non-root user allowed to access QMI devices"
+       help
+         Optional non-root user allowed to access QMI devices
+	 via qmi-proxy (root user is always permited)
+       
+endif

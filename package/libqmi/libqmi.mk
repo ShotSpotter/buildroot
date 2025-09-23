@@ -62,4 +62,9 @@ else
 LIBQMI_CONF_OPTS += -Dbash_completion=false
 endif
 
+
+ifneq ($(BR2_PACKAGE_LIBQMI_NONROOT_USER),)
+LIBQMI_CONF_OPTS += -Dqmi_username=$(BR2_PACKAGE_LIBQMI_NONROOT_USER)
+endif
+
 $(eval $(meson-package))
