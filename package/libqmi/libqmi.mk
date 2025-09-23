@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBQMI_VERSION = 1.36.0
+LIBQMI_VERSION = 1.34.0
 LIBQMI_SITE = https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/archive/$(LIBQMI_VERSION)
 LIBQMI_LICENSE = LGPL-2.0+ (library), GPL-2.0+ (programs)
 LIBQMI_LICENSE_FILES = COPYING COPYING.LIB
@@ -60,6 +60,11 @@ LIBQMI_DEPENDENCIES += bash-completion
 LIBQMI_CONF_OPTS += -Dbash_completion=true
 else
 LIBQMI_CONF_OPTS += -Dbash_completion=false
+endif
+
+
+ifneq ($(BR2_PACKAGE_LIBQMI_NONROOT_USER),)
+LIBQMI_CONF_OPTS += -Dqmi_username=$(BR2_PACKAGE_LIBQMI_NONROOT_USER)
 endif
 
 $(eval $(meson-package))
