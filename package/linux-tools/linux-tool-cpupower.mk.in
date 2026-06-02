@@ -12,7 +12,8 @@ CPUPOWER_MAKE_OPTS = CROSS=$(TARGET_CROSS) \
 	CPUFREQ_BENCH=false \
 	NLS=false \
 	LDFLAGS=$(TARGET_NLS_LIBS) \
-	DEBUG=false
+	DEBUG=false \
+	libdir=/usr/lib
 
 define CPUPOWER_BUILD_CMDS
 	$(Q)if test ! -f $(LINUX_DIR)/tools/power/cpupower/Makefile ; then \
