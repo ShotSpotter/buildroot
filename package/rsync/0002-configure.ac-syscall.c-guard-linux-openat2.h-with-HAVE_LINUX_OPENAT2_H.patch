@@ -1,0 +1,74 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Robert B. Calhoun <rcalhoun@shotspotter.com>
+Date: Tue, 03 Jun 2026 00:00:00 +0000
+Subject: [PATCH] configure.ac, syscall.c: guard linux/openat2.h with HAVE_LINUX_OPENAT2_H
+
+rsync 3.4.0 introduced use of openat2() on Linux for secure relative path
+opening (--open-nolinks). The header <linux/openat2.h> was added in kernel
+5.6, but rsync includes it unconditionally for any Linux target, and
+configure.ac never checks for its presence.
+
+This breaks cross-compilation when the target's kernel headers are older
+than 5.6 (e.g. kernel 4.x or 5.4 LTS targets).
+
+Fix by:
+ - Adding linux/openat2.h to the AC_CHECK_HEADERS probe in configure.ac,
+   which sets HAVE_LINUX_OPENAT2_H in config.h when the header is present.
+ - Guarding the #include and the openat2() code paths in syscall.c with
+   #ifdef HAVE_LINUX_OPENAT2_H / #if defined(__linux__) && defined(HAVE_LINUX_OPENAT2_H).
+
+When the header is absent the openat2() code path is not compiled
+and execution falls through to the existing portable per-component
+O_NOFOLLOW fallback.
+
+Signed-off-by: Robert B. Calhoun <rcalhoun@shotspotter.com>
+
+---
+ configure.ac | 2 +-
+ syscall.c    | 6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+--- a/configure.ac	2026-06-03 05:01:01.411313350 +0000
++++ b/configure.ac	2026-06-03 05:01:06.471353680 +0000
+@@ -11,7 +11,7 @@
+     sys/un.h sys/attr.h arpa/inet.h arpa/nameser.h locale.h sys/types.h \
+     netdb.h malloc.h float.h limits.h iconv.h libcharset.h langinfo.h mcheck.h \
+     sys/acl.h acl/libacl.h attr/xattr.h sys/xattr.h sys/extattr.h dl.h \
+-    popt.h popt/popt.h linux/falloc.h netinet/in_systm.h netgroup.h \
++    popt.h popt/popt.h linux/falloc.h linux/openat2.h netinet/in_systm.h netgroup.h \
+     zlib.h xxhash.h openssl/md4.h openssl/md5.h zstd.h lz4.h sys/file.h \
+     bsd/string.h)
+ AC_CHECK_HEADERS([netinet/ip.h], [], [], [[#include <netinet/in.h>]])
+--- a/syscall.c	2026-06-03 05:01:01.412313358 +0000
++++ b/syscall.c	2026-06-03 05:01:22.045477816 +0000
+@@ -35,8 +35,10 @@
+ 
+ #ifdef __linux__
+ #include <sys/syscall.h>
++#ifdef HAVE_LINUX_OPENAT2_H
+ #include <linux/openat2.h>
+ #endif
++#endif
+ 
+ #include "ifuncs.h"
+ 
+@@ -1691,7 +1693,7 @@
+ 	return 0;
+ }
+ 
+-#ifdef __linux__
++#if defined(__linux__) && defined(HAVE_LINUX_OPENAT2_H)
+ static int secure_relative_open_linux(const char *basedir, const char *relpath, int flags, mode_t mode)
+ {
+ 	struct open_how how;
+@@ -1791,7 +1793,7 @@
+ 		return -1;
+ 	}
+ 
+-#ifdef __linux__
++#if defined(__linux__) && defined(HAVE_LINUX_OPENAT2_H)
+ 	{
+ 		int fd = secure_relative_open_linux(basedir, relpath, flags, mode);
+ 		/* ENOSYS = kernel < 5.6 doesn't have the syscall even though
+-- 
+2.39.0
