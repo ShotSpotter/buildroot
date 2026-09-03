@@ -134,10 +134,10 @@ else
 PERF_MAKE_FLAGS += NO_LIBTRACEEVENT=1
 endif
 
-ifeq ($(BR2_PACKAGE_CLANG),y)
-# perf's BPF-skeleton clang include-path autodetection doesn't resolve Buildroot's custom target triples
+# Buildroot's cross builds can't rely on any host clang's auto-detected
+# include paths for BPF-skeleton compilation. Build will fail when host
+# clang exists even if BR2_PACKAGE_CLANG is not enabled
 PERF_MAKE_FLAGS += BUILD_BPF_SKEL=0
-endif
 
 # We really do not want to build the perf documentation, because it
 # has stringent requirement on the documentation generation tools,
