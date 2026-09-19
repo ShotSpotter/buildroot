@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CPUINFO_VERSION = 8a1772a0c5c447df2d18edf33ec4603a8c9c04a6
+CPUINFO_VERSION = 8ce83db858065145192c97af90cb668ad72a12e9
 CPUINFO_SITE = $(call github,pytorch,cpuinfo,$(CPUINFO_VERSION))
 CPUINFO_LICENSE = BSD-2-Clause
 CPUINFO_LICENSE_FILES = LICENSE
