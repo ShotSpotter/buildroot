@@ -34,7 +34,7 @@ set -e
 # need to care about EXEC being empty, since 'rm -f ""' does nothing.
 trap 'rm -f "${EXEC}"' EXIT
 
-EXEC="$(mktemp -p "${BUILDDIR}" -t .check-headers.XXXXXX)"
+EXEC=$(mktemp -p "${BUILDDIR}" .check-headers.XXXXXX)
 
 # We do not want to account for the patch-level, since headers are
 # not supposed to change for different patchlevels, so we mask it out.
